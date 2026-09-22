@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>31 Días de Amor para Ema ❤️</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,800;1,400;1,600&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        rose: {
+                            500: '#f43f5e',
+                            600: '#e11d48',
+                            900: '#881337',
+                        },
+                        gold: {
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                        },
+                        darkBg: '#0f0511',
+                        cardBg: '#1a091d',
+                    },
+                    fontFamily: {
+                        serif: ['Playfair Display', 'serif'],
+                        cursive: ['Caveat', 'cursive'],
+                        sans: ['Montserrat', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0f0511;
+            color: #fce7f3;
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism effects */
+        .glass-card {
+            background: rgba(30, 11, 35, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(244, 63, 94, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .glass-card-gold {
+            background: rgba(38, 22, 10, 0.8);
+            backdrop-filter: blur(12px);
+            border: 2px solid rgba(251, 191, 36, 0.5);
+            box-shadow: 0 0 25px rgba(245, 158, 11, 0.3);
+        }
+
+        /* Particle Canvas */
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f0511;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #e11d48;
+            border-radius: 4px;
+        }
+
+        /* Heart falling animation */
+        @keyframes floatHeart {
+            0% {
+                transform: translateY(0) rotate(0deg) scale(0.8);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(360deg) scale(1.2);
+                opacity: 0;
+            }
+        }
+
+        .floating-heart {
+            position: fixed;
+            bottom: -50px;
+            pointer-events: none;
+            z-index: 50;
+            animation: floatHeart 4s linear forwards;
+        }
+
+        /* Glowing text effect */
+        .glow-text {
+            text-shadow: 0 0 10px rgba(244, 63, 94, 0.6), 0 0 20px rgba(244, 63, 94, 0.4);
+        }
+
+        .glow-gold {
+            text-shadow: 0 0 12px rgba(251, 191, 36, 0.7), 0 0 24px rgba(245, 158, 11, 0.5);
+        }
+    </style>
+</head>
+<body class="min-h-screen relative pb-16">
+
+    <canvas id="particle-canvas"></canvas>
+
+    <header class="relative z-10 pt-10 pb-6 px-4 text-center max-w-4xl mx-auto">
+        <div class="inline-block mb-3 px-4 py-1.5 rounded-full bg-rose-900/40 border border-rose-500/40 text-rose-300 text-xs md:text-sm font-semibold tracking-wider uppercase">
+            <i class="fa-solid fa-heart text-rose-500 mr-2 animate-pulse"></i> Colección Especial de Octubre <i class="fa-solid fa-heart text-rose-500 ml-2 animate-pulse"></i>
+        </div>
+        <h1 class="font-serif text-4xl sm:text-5xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-rose-300 via-rose-100 to-amber-200 mb-3 tracking-tight glow-text">
+            31 Días de Cartas para Ema
+        </h1>
+        <p class="font-cursive text-2xl sm:text-3xl text-rose-200/90 max-w-2xl mx-auto font-medium">
+            "En cada día de este mes te dejo un pedacito de mi alma, para recordarte que nunca te voy a olvidar."
+        </p>
+
+        <!-- Interactive Control Bar -->
+        <div class="mt-8 flex flex-wrap justify-center gap-3 sm:gap-4 relative z-20">
+            <button id="musicBtn" onclick="toggleAudio()" class="px-5 py-2.5 rounded-full bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-500 hover:to-rose-600 text-white font-medium text-sm shadow-lg shadow-rose-900/50 flex items-center gap-2 transition-all transform hover:scale-105">
+                <i class="fa-solid fa-music"></i>
+                <span id="musicBtnText">Música Romántica</span>
+            </button>
+
+            <button onclick="triggerHeartsRain()" class="px-5 py-2.5 rounded-full bg-gradient-to-r from-amber-500 to-gold-600 hover:from-amber-400 hover:to-gold-500 text-stone-950 font-semibold text-sm shadow-lg shadow-amber-900/40 flex items-center gap-2 transition-all transform hover:scale-105">
+                <i class="fa-solid fa-heart-pulse"></i>
+                <span>Lluvia de Besos</span>
+            </button>
+
+            <button onclick="showRandomReason()" class="px-5 py-2.5 rounded-full bg-rose-950/80 hover:bg-rose-900/80 border border-rose-500/50 text-rose-200 font-medium text-sm shadow-lg flex items-center gap-2 transition-all transform hover:scale-105">
+                <i class="fa-solid fa-sparkles text-amber-300"></i>
+                <span>¿Por qué te amo hoy?</span>
+            </button>
+        </div>
+    </header>
+
+    <section class="relative z-10 max-w-6xl mx-auto px-4 my-6">
+        <div onclick="openLetter(18)" class="cursor-pointer glass-card-gold rounded-2xl p-6 md:p-8 relative overflow-hidden transition-all duration-300 transform hover:-translate-y-1 hover:shadow-2xl hover:shadow-amber-500/20 group">
+            <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-amber-500/10 rounded-full blur-2xl group-hover:bg-amber-500/20 transition-all"></div>
+            <div class="flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
+                <div class="flex items-center gap-5">
+                    <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-amber-400 to-rose-600 flex items-center justify-center text-stone-950 font-serif font-extrabold text-2xl sm:text-3xl shadow-lg transform group-hover:scale-110 transition-transform">
+                        18
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2 text-amber-300 font-bold text-xs sm:text-sm uppercase tracking-widest mb-1">
+                            <i class="fa-solid fa-crown text-amber-400"></i> DÍA DEDICADO Y ESPECIAL <i class="fa-solid fa-crown text-amber-400"></i>
+                        </div>
+                        <h2 class="text-2xl sm:text-3xl font-serif font-bold text-amber-100 group-hover:text-amber-300 transition-colors">
+                            ¡Nuestro Primer Mes de Novios! 🎉❤️
+                        </h2>
+                        <p class="text-xs sm:text-sm text-amber-200/80 mt-1 max-w-xl">
+                            Haz clic aquí para abrir la carta principal. Una declaración profunda, larga y especial con nuestros momentos en fotos.
+                        </p>
+                    </div>
+                </div>
+                <div class="w-full md:w-auto text-center md:text-right">
+                    <span class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-rose-600 text-stone-950 font-bold text-sm shadow-xl group-hover:scale-105 transition-transform">
+                        <span>Leer Carta Especial</span>
+                        <i class="fa-solid fa-envelope-open-text"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <main class="relative z-10 max-w-6xl mx-auto px-4 py-8">
+        <h2 class="font-serif text-2xl font-bold text-center text-rose-200 mb-8 flex items-center justify-center gap-3">
+            <span class="h-px w-12 bg-rose-500/40"></span>
+            <span>Calendario del Mes de Octubre</span>
+            <span class="h-px w-12 bg-rose-500/40"></span>
+        </h2>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4" id="lettersGrid">
+            <!-- Dynamically populated letters -->
+        </div>
+    </main>
+
+    <div id="letterModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300">
+        <div id="modalContainer" class="glass-card max-w-3xl w-full max-h-[90vh] rounded-3xl overflow-hidden flex flex-col transform scale-95 transition-all duration-300 border border-rose-500/30">
+            <!-- Modal Header -->
+            <div id="modalHeader" class="p-6 bg-gradient-to-r from-rose-950 via-purple-950 to-rose-950 border-b border-rose-500/20 flex items-center justify-between">
+                <div>
+                    <span id="modalDate" class="text-xs uppercase tracking-widest text-rose-400 font-bold">1 de Octubre</span>
+                    <h3 id="modalTitle" class="font-serif text-xl sm:text-2xl font-bold text-amber-100">Título de la Carta</h3>
+                </div>
+                <button onclick="closeModal()" class="w-10 h-10 rounded-full bg-rose-900/50 hover:bg-rose-800 text-rose-200 flex items-center justify-center transition-colors">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Modal Content (Scrollable) -->
+            <div id="modalBody" class="p-6 sm:p-8 overflow-y-auto space-y-6 text-stone-200 font-sans leading-relaxed">
+                <!-- Content injected dynamically -->
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="p-4 bg-stone-950/80 border-t border-rose-500/20 flex justify-between items-center text-xs text-rose-300/70">
+                <span>Para mi amor eterno: Ema ❤️</span>
+                <button onclick="closeModal()" class="px-4 py-2 rounded-xl bg-rose-800 hover:bg-rose-700 text-white font-medium text-xs transition-colors">
+                    Cerrar Carta
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="reasonModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300">
+        <div class="glass-card max-w-md w-full rounded-2xl p-6 text-center border border-amber-500/40 relative">
+            <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-amber-500/20 border border-amber-400 flex items-center justify-center text-amber-300 text-2xl">
+                <i class="fa-solid fa-quote-left"></i>
+            </div>
+            <h4 class="font-serif text-lg font-bold text-amber-200 mb-2">Una Razón Más Para Amarte</h4>
+            <p id="reasonText" class="font-cursive text-2xl text-rose-100 my-4 min-h-[80px] flex items-center justify-center">
+                ...
+            </p>
+            <button onclick="closeReasonModal()" class="mt-4 px-6 py-2 rounded-full bg-gradient-to-r from-rose-600 to-amber-600 text-white font-medium text-xs transition-all hover:opacity-90">
+                Entendido, mi amor ❤️
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Photo storage handling via LocalStorage & FileReader
+        function getStoredPhoto(slot, fallbackText) {
+            return localStorage.getItem('ema_photo_' + slot) || null;
+        }
+
+        function handleImageUpload(slot, event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const base64Image = e.target.result;
+                    localStorage.setItem('ema_photo_' + slot, base64Image);
+                    // Refresh letter if open
+                    openLetter(18);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function triggerFileInput(slot) {
+            document.getElementById('fileInput_' + slot).click();
+        }
+
+        // Daily Letters Content (1 to 31)
+        const dailyLetters = {
+            1: {
+                title: "El inicio de nuestro hermoso Octubre",
+                content: `Mi dulce Ema,\n\nHoy comenzamos este mes de octubre y no puedo evitar sonreír al pensar en todo lo que hemos vivido y en todo lo que nos espera. Cada mañana al despertar, lo primero que viene a mi mente es la inmensa suerte que tengo de tenerte en mi vida.\n\nQuiero que este mes sea un recordatorio constante de que no importa cuántos días pasen, mi amor por ti solo sigue creciendo más fuerte, profundo e indestructible. Eres el sol de mis días y la calma de mis noches. Que este sea el inicio de un mes maravilloso juntos.`
+            },
+            2: {
+                title: "Tu sonrisa iluminándolo todo",
+                content: `Ema hermosa,\n\nSi supieras el impacto que tiene tu sonrisa en mi día a día... Es como un faro de luz en medio de cualquier tormenta. Cuando sonríes, el tiempo parece detenerse y todo cobra sentido.\n\nQuiero prometerte hoy que haré todo lo posible para ser el motivo de tus sonrisas diarias. Nunca olvides cuánto significas para mí.`
+            },
+            3: {
+                title: "La paz de tus abrazos",
+                content: `Mi amor,\n\nNo hay lugar en el universo donde me sienta más seguro, en paz y lleno de felicidad que acurrucado en tus brazos. Tus abrazos tienen el poder mágico de borrar cualquier cansancio o tristeza.\n\nGracias por ser mi refugio constante, mi hogar y mi lugar favorito en todo el mundo. Te amo infinitamente.`
+            },
+            4: {
+                title: "Un amor que no conoce límites",
+                content: `Ema de mi vida,\n\nA veces me detengo a pensar en la forma en que nos encontramos y en cómo se fue tejiendo este sentimiento tan grande. No es un amor común; es profundo, intenso y lleno de una complicidad hermosa.\n\nQuiero que tengas la certeza absoluta de que siempre estaré a tu lado, cuidándote, apoyándote y recordándote lo maravillosa que eres.`
+            },
+            5: {
+                title: "Tus ojos, mi universo",
+                content: `Mi reina,\n\nMirarte a los ojos es como asomarme a un mundo donde solo existe la ternura y la verdad. En tu mirada encuentro la paz que tanto busqué durante años.\n\nGracias por mirarme de la manera en que lo haces, con tanta dulzura y cariño. Prometo cuidar cada destello de luz en tus ojos.`
+            },
+            6: {
+                title: "Los pequeños detalles",
+                content: `Ema mi amor,\n\nHoy pensaba en todas las pequeñas cosas que te hacen ser tan especial: tu forma de hablar, cómo te ríes, tus gestos sutiles, la calidez de tus manos... Todo en ti me fascina.\n\nSon los pequeños detalles cotidianos los que construyen este amor gigante. Te amo por quién eres en cada segundo.`
+            },
+            7: {
+                title: "Una semana más amándote",
+                content: `Mi princesa,\n\nLlegamos al día 7 de este mes y cada día me reafirma que haberte conocido ha sido la mayor bendición de mi vida. No me canso de repetir lo feliz que me haces.\n\nEres mi sueño hecho realidad y no cambiaría absolutamente nada de lo que compartimos.`
+            },
+            8: {
+                title: "Complicidad única",
+                content: `Ema adorable,\n\nMe encanta la complicidad que existe entre nosotros. Esas miradas discretas que lo dicen todo, nuestras risas compartidas y la forma en que nos entendemos casi sin hablar.\n\nSaber que cuento contigo y que tú cuentas conmigo al 100% es el regalo más valioso.`
+            },
+            9: {
+                title: "Tu voz dulce",
+                content: `Mi cielo,\n\nEscuchar tu voz es mi melodía favorita. No importa lo agitado o difícil que haya sido el día, basta con oírte hablar para que una serenidad profunda me llene el corazón.\n\nGracias por ser mi paz y mi alegría.`
+            },
+            10: {
+                title: "Agradecido por tenerte",
+                content: `Ema hermosa,\n\nHoy solo quiero dedicar este mensaje a darte las gracias. Gracias por tu paciencia, por tu cariño incondicional, por tus abrazos sinceros y por llenar mis días de tanto color.\n\nEstar a tu lado me hace querer ser una mejor persona cada día.`
+            },
+            11: {
+                title: "Pensándote a cada instante",
+                content: `Mi vida,\n\nNo importa qué esté haciendo o dónde me encuentre, siempre hay un espacio gigante en mi pensamiento dedicado exclusivamente a ti. Estás presente en cada suspiro y en cada latido.\n\nTe amo con todo mi ser, hoy y siempre.`
+            },
+            12: {
+                title: "Construyendo recuerdos",
+                content: `Ema preciosa,\n\nMe fascina mirar hacia atrás y ver todos los bonitos recuerdos que ya hemos construido juntos, y me emociona aún más saber que apenas estamos comenzando esta linda historia.\n\nCada segundo a tu lado se convierte en una memoria imborrable.`
+            },
+            13: {
+                title: "Tu ternura infinita",
+                content: `Mi niña linda,\n\nTu ternura es como una caricia al alma. Tienes esa capacidad única de envolver todo en amor y suavidad. A tu lado aprendí el verdadero significado de la dulzura.\n\nNunca cambies esa esencia mágica que tienes.`
+            },
+            14: {
+                title: "Sintiéndome afortunado",
+                content: `Ema de mi corazón,\n\nSi me preguntaran cuál ha sido el momento más afortunado de mi vida, sin duda diría que fue el instante en que cruzamos nuestros caminos. Eres el regalo más grande que la vida me dio.`
+            },
+            15: {
+                title: "Contando los días",
+                content: `Mi amor bello,\n\nFaltan solo unos días para una fecha muy, muy especial para nosotros. Mirar el calendario me llena el pecho de una emoción inmensa. Gracias por regalarme la etapa más hermosa de mi vida.`
+            },
+            16: {
+                title: "La dulzura de tu presencia",
+                content: `Ema mía,\n\nSolo saber que estás ahí, que eres mi novia, que compartimos este hilo invisible pero indestructible de amor, llena mi día de una alegría indescriptible.\n\nEres mi luz constante.`
+            },
+            17: {
+                title: "La víspera de nuestro gran día",
+                content: `Mi amada Ema,\n\nHoy estamos a solo unas horas de cumplir nuestro primer mes juntos oficialmente como novios. Mi corazón late acelerado de pura felicidad y expectativa.\n\nMañana celebraremos este primer gran hito, pero desde ya te digo: este es solo el comienzo de nuestra historia infinita.`
+            },
+
+            // ==========================================
+            // SPECIAL DAY 18: 1 MONTH ANNIVERSARY
+            // ==========================================
+            18: {
+                isAnniversary: true,
+                title: "¡NUESTRO PRIMER MES DE NOVIOS! 🌹🎉❤️",
+                content: `MI AMOR ETERNO, MI HERMOSA EMA:
+
+Hoy, 18 de Octubre, cumplimos nuestro PRIMER MES DE NOVIOS, y no me alcanzan las palabras en ningún idioma para expresar la felicidad absoluta, la gratitud y el amor tan profundo que siento en este preciso instante. 
+
+Parece increíble cómo el tiempo vuela cuando uno es infinitamente feliz, pero al mismo tiempo siento que te conozco de toda la vida, como si nuestras almas hubieran estado destinadas a encontrarse desde siempre. Este primer mes juntos ha sido, sin duda alguna, la etapa más hermosa, mágica, llena de paz y alegría de toda mi existencia.
+
+Desde que llegaste a mi vida, todo cobró un color distinto, más brillante y lleno de sentido. Me has enseñado lo que realmente significa amar con el corazón abierto, sin miedos y con una entrega total. Contigo no tengo que fingir nada; puedo ser exactamente quien soy, porque en tu mirada encuentro la aceptación más pura y el cariño más sincero.
+
+Cada día a tu lado es una lección de dulzura, risas verdaderas y una complicidad que no cambiaría por nada en este mundo. Me llena el alma saber que nos elegimos día con día, que caminamos juntos de la mano y que construimos esto tan hermoso sobre la base de un respeto y un cariño infinitos.
+
+Quiero dejar grabado aquí, para siempre, que JAMÁS TE VOY A OLVIDAR. No importa el tiempo que pase ni las vueltas que dé la vida, tú ya estás marcada en lo más profundo de mi corazón. Eres mi presente más valioso y el futuro que más anhelo.
+
+---
+
+### NUESTROS MOMENTOS INMORTALIZADOS EN FOTOS 📸✨
+
+Para celebrar este primer mes, quiero plasmar aquí tres de nuestros recuerdos más hermosos y especiales que reflejan exactamente lo que somos:
+
+`
+            },
+
+            19: {
+                title: "Un día después del primer mes",
+                content: `Mi adorada Ema,\n\nAyer fue un día inolvidable celebrando nuestro primer mes, y hoy despierto con la misma certeza y amor reafirmado. Nuestro primer mes es solo la primera piedra de un castillo enorme que vamos a construir juntos.\n\nGracias por haber hecho de ayer algo tan lindo. Te amo con locura.`
+            },
+            20: {
+                title: "Tu abrazo que sana",
+                content: `Ema mi cielo,\n\nHay días en los que el mundo exterior puede ser pesado o caótico, pero sé que al llegar a ti todo se transforma en serenidad. Tus abrazos son sanación pura para mi alma.\n\nGracias por ser mi lugar seguro siempre.`
+            },
+            21: {
+                title: "Mi prioridad siempre",
+                content: `Mi reina,\n\nQuiero que nunca dudes de cuál es tu lugar en mi vida: eres y serás siempre mi prioridad, mi pensamiento favorito y la persona a la que más cuido y valoro.\n\nEstar contigo me llena de un orgullo y una alegría inmensos.`
+            },
+            22: {
+                title: "Risas sin fin",
+                content: `Ema risueña,\n\nUna de las cosas que más amo de nosotros es lo mucho que nos divertimos. Nuestras bromas, nuestras risas espontáneas y esos momentos tontos pero perfectos que solo nosotros entendemos.\n\nContigo la vida se siente liviana y hermosa.`
+            },
+            23: {
+                title: "Un sentimiento firme",
+                content: `Mi amada Ema,\n\nLo que siento por ti no es algo pasajero; es una llama firme, cálida y eterna que arde en mi pecho. Cada conversación, cada caricia y cada beso reafirma que eres la mujer de mi vida.`
+            },
+
+            24: {
+                title: "Admiración profunda",
+                content: `Ema linda,\n\nNo solo te amo con toda el alma, también te admiro profundamente. Admiro tu fuerza, tu inteligencia, tu corazón noble y la belleza que irradias por dentro y por fuera.\n\nSoy el novio más dichoso del planeta.`
+            },
+            25: {
+                title: "Un futuro a tu lado",
+                content: `Mi vida,\n\nCuando me detengo a soñar despierto e imagino el futuro, siempre estás tú en él. Imagino miles de aventuras, viajes, tardes tranquilas y momentos especiales compartidos contigo.\n\nQuiero caminar a tu lado por siempre.`
+            },
+            26: {
+                title: "Cerca en el corazón",
+                content: `Ema hermosa,\n\nNo importa la distancia física que pueda haber en ciertos momentos, nuestro hilo invisible nos mantiene pegados todo el tiempo. Te siento cerquita en cada latido de mi corazón.`
+            },
+            27: {
+                title: "Tu luz en mi camino",
+                content: `Mi princesa,\n\nAntes de ti había días grises, pero desde que eres mi novia, cada día brilla con una luz especial. Me inspiras a ser mejor, a luchar por mis sueños y a dar lo mejor de mí.`
+            },
+            28: {
+                title: "Promesa de fidelidad y amor",
+                content: `Ema de mi alma,\n\nHoy quiero renovarte mi promesa de estar siempre para ti, de cuidarte en la salud y en la enfermedad, en los días de sol y en los días de lluvia. Tienes mi corazón enterito para siempre.`
+            },
+            29: {
+                title: "Casi cerrando el mes",
+                content: `Mi cielo,\n\nSe está terminando octubre y me llena de ternura ver cuántos recuerdos bellos hemos sumado en solo 31 días. Cada jornada contigo es una página dorada en mi historia.`
+            },
+            30: {
+                title: "Eternamente tu novio",
+                content: `Ema adorada,\n\nSer tu novio es el título que ostento con más orgullo en este mundo. Me encanta decir que soy tuyo y saber que tú eres mía. Un amor maduro, dulce y sincero.`
+            },
+            31: {
+                title: "Cierre de un mes mágico, inicio de una eternidad",
+                content: `MI QUERIDA EMA:\n\nHoy culmina el mes de Octubre, pero no nuestro amor. Este mes ha sido testigo del inicio formal de nuestra historia como novios, de nuestro primer mesiversario y de miles de sonrisas compartidas.\n\nTe prometo que el mes que entra y todos los que vengan estarán llenos del mismo o más amor, atenciones, detalles y abrazos apretados.\n\nNUNCA TE VOY A OLVIDAR, porque eres el amor de mi vida. Te amo con cada rincón de mi ser, hoy, mañana y por el resto de la eternidad. ❤️`
+            }
+        };
+
+        // Reasons why I love you generator
+        const loveReasons = [
+            "Porque la forma en que me miras me hace sentir el hombre más afortunado del universo.",
+            "Porque tu sonrisa tiene la capacidad de iluminar hasta mi día más oscuro.",
+            "Porque tus abrazos son mi refugio perfecto en este mundo.",
+            "Porque con solo escuchar tu voz siento una paz inmensa en mi corazón.",
+            "Porque me aceptas exactamente como soy y me inspiras a ser mejor persona.",
+            "Porque la dulzura y nobleza de tu corazón no tienen comparación.",
+            "Porque el 18 de octubre se convirtió en mi fecha favorita de todo el calendario.",
+            "Porque me encanta la forma en que nos reímos juntos de cualquier tontería.",
+            "Porque tus besos son el regalo más dulce de mi día a día.",
+            "Porque eres mi novia, mi compañera y mi lugar favorito en el mundo.",
+            "Porque nunca olvido el brillo precioso de tus ojos cuando estás feliz.",
+            "Porque a tu lado he entendido lo que realmente significa amar sin reservas."
+        ];
+
+        function generateGrid() {
+            const grid = document.getElementById('lettersGrid');
+            grid.innerHTML = '';
+
+            for (let day = 1; day <= 31; day++) {
+                const is18 = (day === 18);
+                const card = document.createElement('div');
+                
+                if (is18) {
+                    card.className = "col-span-2 sm:col-span-3 md:col-span-2 lg:col-span-2 cursor-pointer glass-card-gold rounded-2xl p-4 transition-all duration-300 transform hover:-translate-y-1.5 hover:scale-105 flex flex-col justify-between relative overflow-hidden group";
+                    card.onclick = () => openLetter(18);
+                    card.innerHTML = `
+                        <div class="absolute top-2 right-2 text-amber-400 text-xs font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-amber-950/80 border border-amber-500/40">
+                            ★ Aniversario
+                        </div>
+                        <div class="mt-2">
+                            <div class="text-3xl sm:text-4xl font-serif font-extrabold text-amber-300 mb-1">Oct 18</div>
+                            <div class="text-sm font-semibold text-amber-100 line-clamp-1 group-hover:text-amber-300 transition-colors">
+                                ¡1er Mes de Novios! 🎉
+                            </div>
+                            <p class="text-xs text-amber-200/70 mt-1 line-clamp-2">
+                                Carta especial extensa y álbum de recuerdos...
+                            </p>
+                        </div>
+                        <div class="mt-4 pt-2 border-t border-amber-500/30 flex items-center justify-between text-xs font-bold text-amber-300">
+                            <span>Leer carta larga</span>
+                            <i class="fa-solid fa-heart text-rose-500 animate-pulse"></i>
+                        </div>
+                    `;
+                } else {
+                    card.className = "cursor-pointer glass-card rounded-2xl p-4 transition-all duration-300 transform hover:-translate-y-1 hover:border-rose-500/50 flex flex-col justify-between group";
+                    card.onclick = () => openLetter(day);
+                    card.innerHTML = `
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-semibold text-rose-400 uppercase tracking-wider">Octubre</span>
+                                <span class="w-6 h-6 rounded-full bg-rose-950 border border-rose-500/30 text-rose-200 text-xs flex items-center justify-center font-bold">${day}</span>
+                            </div>
+                            <h3 class="text-xs sm:text-sm font-semibold text-stone-200 group-hover:text-rose-300 transition-colors line-clamp-2">
+                                ${dailyLetters[day].title}
+                            </h3>
+                        </div>
+                        <div class="mt-3 text-right">
+                            <i class="fa-regular fa-envelope text-rose-400/60 group-hover:text-rose-400 group-hover:translate-x-1 transition-all text-xs"></i>
+                        </div>
+                    `;
+                }
+                grid.appendChild(card);
+            }
+        }
+
+        function openLetter(day) {
+            const letter = dailyLetters[day];
+            if (!letter) return;
+
+            const modal = document.getElementById('letterModal');
+            const container = document.getElementById('modalContainer');
+            const dateElem = document.getElementById('modalDate');
+            const titleElem = document.getElementById('modalTitle');
+            const bodyElem = document.getElementById('modalBody');
+
+            dateElem.textContent = `${day} de Octubre` + (day === 18 ? " - DÍA ESPECIAL" : "");
+            titleElem.textContent = letter.title;
+
+            if (day === 18) {
+                // Get photos from LocalStorage if available
+                const img1 = getStoredPhoto(1);
+                const img2 = getStoredPhoto(2);
+                const img3 = getStoredPhoto(3);
+
+                // Helper to render photo frame with upload trigger
+                function renderPhotoCard(slot, imgUrl, title, description) {
+                    return `
+                        <input type="file" id="fileInput_${slot}" accept="image/*" class="hidden" onchange="handleImageUpload(${slot}, event)">
+                        <div class="glass-card-gold rounded-2xl overflow-hidden p-3 transition-transform hover:scale-[1.01] relative group">
+                            <div class="relative rounded-xl overflow-hidden bg-stone-900 min-h-[250px] max-h-[480px] flex flex-col items-center justify-center">
+                                ${imgUrl ? `
+                                    <img src="${imgUrl}" alt="${title}" class="w-full h-auto object-cover rounded-lg shadow-2xl">
+                                    <button onclick="triggerFileInput(${slot})" class="absolute top-3 right-3 px-3 py-1.5 rounded-full bg-black/70 hover:bg-black/90 text-amber-300 text-xs font-semibold backdrop-blur-md border border-amber-400/40 transition-all opacity-80 hover:opacity-100 flex items-center gap-1.5">
+                                        <i class="fa-solid fa-arrows-rotate"></i> Cambiar Foto
+                                    </button>
+                                ` : `
+                                    <div class="p-8 text-center space-y-3">
+                                        <div class="w-16 h-16 mx-auto rounded-full bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-300 text-2xl">
+                                            <i class="fa-solid fa-camera"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-amber-200 font-serif font-bold text-base">${title}</p>
+                                            <p class="text-xs text-stone-400 max-w-xs mx-auto mt-1">Sube la foto correspondiente desde tu dispositivo</p>
+                                        </div>
+                                        <button onclick="triggerFileInput(${slot})" class="px-5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-rose-600 hover:from-amber-400 hover:to-rose-500 text-stone-950 font-bold text-xs shadow-lg transition-all transform hover:scale-105">
+                                            <i class="fa-solid fa-upload mr-1"></i> Seleccionar Foto ${slot}
+                                        </button>
+                                    </div>
+                                `}
+                            </div>
+                            <div class="p-3 text-left">
+                                <span class="text-amber-300 font-serif font-bold text-base sm:text-lg block">${slot}. ${title}</span>
+                                <p class="text-xs sm:text-sm text-stone-300 font-sans mt-1 leading-relaxed">${description}</p>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                let html = `
+                    <div class="bg-gradient-to-b from-amber-950/40 to-transparent p-4 sm:p-6 rounded-2xl border border-amber-500/30 mb-6">
+                        <div class="text-center mb-6">
+                            <span class="inline-block px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-bold uppercase tracking-widest mb-2 border border-amber-400/30">
+                                <i class="fa-solid fa-crown text-amber-400 mr-1"></i> Celebramos 1 Mes De Amor
+                            </span>
+                            <h2 class="font-serif text-2xl sm:text-3xl text-amber-200 font-extrabold">Para la novia más maravillosa: Ema</h2>
+                        </div>
+                        
+                        <div class="whitespace-pre-line font-serif text-stone-200 text-base sm:text-lg leading-relaxed space-y-4">
+                            ${letter.content}
+                        </div>
+                    </div>
+
+                    <!-- PHOTO GALLERY FOR OCT 18 -->
+                    <div class="space-y-8 my-8">
+                        <h3 class="font-serif text-xl font-bold text-center text-amber-300 border-b border-amber-500/30 pb-3 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-camera-retro text-amber-400"></i>
+                            <span>Nuestra Galería de Amor del 1er Mes</span>
+                        </h3>
+
+                        ${renderPhotoCard(1, img1, "Un Abrazo Eterno con Rosas Rosadas", "Ese momento mágico en el que te rodeé con mis brazos, entregándote esas rosas tan especiales como tú. Tu abrazo cálido bajo la noche es de mis recuerdos favoritos.")}
+
+                        ${renderPhotoCard(2, img2, "Cercanía, Miradas y Paz", "Estar así de cerquita de ti, apoyados uno contra el otro, sintiendo la respiración y la calma de saber que estamos juntos. Tu miradita detrás de tus lentes me enamora a diario.")}
+
+                        ${renderPhotoCard(3, img3, "La Complicidad de Nuestras Sonrisas", "Nada se compara a ver esa sonrisa en tu rostro. Esta foto captura la verdadera alegría, el amor genuino y la felicidad inmensa que sentimos estando juntitos.")}
+                    </div>
+
+                    <!-- Continued Anniversary Text -->
+                    <div class="bg-rose-950/30 p-6 rounded-2xl border border-rose-500/30 font-serif text-stone-200 text-base sm:text-lg leading-relaxed space-y-4">
+                        <p class="font-bold text-amber-200">MI PROMESA DE ANIVERSARIO PARA TI, EMA:</p>
+                        <p>Prometo seguir escuchándote siempre, abrazándote en tus momentos tristes, celebrando cada uno de tus logros y recordándote todos los días de la semana lo increíble, hermosa y valiosa que eres.</p>
+                        <p>Gracias por este primer mes siendo mi novia oficial. Ha sido el mejor mes de toda mi vida y el comienzo de nuestra eternidad juntos. ¡Feliz primer mes, mi vida adorada! Te amo infinitamente.</p>
+                    </div>
+                `;
+                bodyElem.innerHTML = html;
+            } else {
+                bodyElem.innerHTML = `
+                    <div class="font-sans text-stone-200 text-base leading-relaxed whitespace-pre-line bg-rose-950/20 p-6 rounded-2xl border border-rose-500/20">
+                        ${letter.content}
+                    </div>
+                `;
+            }
+
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            container.classList.remove('scale-95');
+            container.classList.add('scale-100');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('letterModal');
+            const container = document.getElementById('modalContainer');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            container.classList.remove('scale-100');
+            container.classList.add('scale-95');
+        }
+
+        function showRandomReason() {
+            const random = loveReasons[Math.floor(Math.random() * loveReasons.length)];
+            document.getElementById('reasonText').textContent = `"${random}"`;
+            
+            const modal = document.getElementById('reasonModal');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+        }
+
+        function closeReasonModal() {
+            document.getElementById('reasonModal').classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        function triggerHeartsRain() {
+            const hearts = ['❤️', '💖', '🌹', '✨', '💕', '🥰', '🌸'];
+            for (let i = 0; i < 35; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.className = 'floating-heart text-2xl sm:text-3xl';
+                    heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+                    heart.style.left = Math.random() * 100 + 'vw';
+                    heart.style.animationDuration = (Math.random() * 2 + 3) + 's';
+                    document.body.appendChild(heart);
+
+                    setTimeout(() => {
+                        heart.remove();
+                    }, 4000);
+                }, i * 100);
+            }
+        }
+
+        let audioCtx = null;
+        let isPlaying = false;
+        let intervalId = null;
+
+        function toggleAudio() {
+            const btnText = document.getElementById('musicBtnText');
+            if (!isPlaying) {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                playRomanticMelody();
+                isPlaying = true;
+                btnText.textContent = "Pausar Música";
+            } else {
+                if (intervalId) clearInterval(intervalId);
+                isPlaying = false;
+                btnText.textContent = "Música Romántica";
+            }
+        }
+
+        function playRomanticMelody() {
+            // Soft ambient romantic sequence notes (Hz)
+            const notes = [261.63, 329.63, 392.00, 493.88, 523.25, 440.00, 349.23, 392.00]; // C4, E4, G4, B4, C5, A4, F4, G4
+            let index = 0;
+
+            intervalId = setInterval(() => {
+                if (!audioCtx || !isPlaying) return;
+
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(notes[index], audioCtx.currentTime);
+
+                gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.08, audioCtx.currentTime + 0.3);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.8);
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc.start();
+                osc.stop(audioCtx.currentTime + 1.9);
+
+                index = (index + 1) % notes.length;
+            }, 1200);
+        }
+
+        function initParticles() {
+            const canvas = document.getElementById('particle-canvas');
+            const ctx = canvas.getContext('2d');
+
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            resize();
+            window.addEventListener('resize', resize);
+
+            const particles = [];
+            const particleCount = Math.min(window.innerWidth / 15, 60);
+
+            for (let i = 0; i < particleCount; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    radius: Math.random() * 2 + 0.5,
+                    color: Math.random() > 0.5 ? 'rgba(251, 191, 36, ' : 'rgba(244, 63, 94, ',
+                    alpha: Math.random() * 0.5 + 0.2,
+                    speedY: -(Math.random() * 0.5 + 0.2),
+                    speedX: (Math.random() - 0.5) * 0.3
+                });
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                particles.forEach(p => {
+                    p.y += p.speedY;
+                    p.x += p.speedX;
+
+                    if (p.y < 0) {
+                        p.y = canvas.height;
+                        p.x = Math.random() * canvas.width;
+                    }
+
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = p.color + p.alpha + ')';
+                    ctx.fill();
+                });
+
+                requestAnimationFrame(animate);
+            }
+
+            animate();
+        }
+
+        // Initialize App on window load
+        window.onload = function () {
+            generateGrid();
+            initParticles();
+        };
+    </script>
+</body>
+</html>
